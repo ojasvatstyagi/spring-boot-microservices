@@ -14,12 +14,12 @@ public class OpenAPIConfig {
     public OpenAPI apiGatewayDoc() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("API Gateway")
-                        .description("Gateway routing for all services")
-                        .version("v1.0")
-                        .contact(new Contact().name("Ojas Tyagi").email("ojas.vats.tyagi@gmail.com")))
+                .title("API Gateway")
+                .description("Gateway routing for all services")
+                .version("v1.0")
+                .contact(new Contact().name("Ojas Tyagi").email("ojas.vats.tyagi@gmail.com")))
                 .externalDocs(new ExternalDocumentation()
-                        .description("API Gateway Docs")
-                        .url("http://localhost:9000/api-docs"));
+                .description("API Gateway Docs")
+                .url("http://localhost:9000/api-docs"));
     }
 }
