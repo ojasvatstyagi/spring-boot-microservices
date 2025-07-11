@@ -1,4 +1,8 @@
 package com.ojas.microservices.inventory.repository;
 
-public interface InventoryRepository {
+import com.ojas.microservices.inventory.model.Inventory;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface InventoryRepository extends JpaRepository<Inventory, Long> {
+    boolean existsBySkuCodeAndQuantityIsGreaterThanEqual(String skuCode, int quantity);
 }
