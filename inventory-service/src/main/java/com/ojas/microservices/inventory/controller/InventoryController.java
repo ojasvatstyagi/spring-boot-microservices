@@ -3,7 +3,6 @@ package com.ojas.microservices.inventory.controller;
 import com.ojas.microservices.inventory.dto.InventoryResponse;
 import com.ojas.microservices.inventory.service.InventoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +17,6 @@ public class InventoryController {
     public ResponseEntity<InventoryResponse> isInStock(@RequestParam String skuCode,
                                     @RequestParam Integer quantity) {
         InventoryResponse inStock = inventoryService.isInStock(skuCode, quantity);
-        return ResponseEntity.status(HttpStatus.CREATED).body(inStock);
+        return ResponseEntity.ok(inStock);
     }
 }

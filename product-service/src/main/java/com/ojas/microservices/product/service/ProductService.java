@@ -13,10 +13,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private static final String PRODUCT_NOT_FOUND = "Product not found with id: ";
 
     public ProductResponse createProduct(ProductRequest productRequest) {
         Product product = Product.builder()
@@ -26,13 +26,11 @@ public class ProductService {
                 .build();
 
         productRepository.save(product);
-        log.info("Product {} is saved", product.getId());
         return mapToProductResponse(product);
     }
 
     public List<ProductResponse> getAllProducts() {
         List<Product> products = productRepository.findAll();
-
         return products.stream().map(this::mapToProductResponse).toList();
     }
 
@@ -43,13 +41,13 @@ public class ProductService {
 
     public ProductResponse getProductById(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND + id));
         return mapToProductResponse(product);
     }
 
     public ProductResponse updateProduct(String id, ProductRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND + id));
 
         product.setName(request.name());
         product.setDescription(request.description());
@@ -61,7 +59,7 @@ public class ProductService {
 
     public void deleteProduct(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND + id));
         productRepository.delete(product);
     }
 

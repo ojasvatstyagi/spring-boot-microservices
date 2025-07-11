@@ -2,6 +2,7 @@ package com.ojas.microservices.product.controller;
 
 import com.ojas.microservices.product.dto.ProductRequest;
 import com.ojas.microservices.product.dto.ProductResponse;
+import com.ojas.microservices.product.exception.ProductNotFoundException;
 import com.ojas.microservices.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,20 +33,32 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable String id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+        try {
+            return ResponseEntity.ok(productService.getProductById(id));
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable String id,
             @RequestBody @Valid ProductRequest productRequest) {
-        return ResponseEntity.ok(productService.updateProduct(id, productRequest));
+        try {
+            return ResponseEntity.ok(productService.updateProduct(id, productRequest));
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        try {
+            return ResponseEntity.noContent().build();
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
