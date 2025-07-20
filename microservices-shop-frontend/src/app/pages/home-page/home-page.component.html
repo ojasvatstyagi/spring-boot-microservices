@@ -1,50 +1,101 @@
-<main>
-  <div class="p-4">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold mb-4">Products ({{ products.length }})</h1>
-      @if (isAuthenticated) {
-        <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 ml-4"
-                (click)="goToCreateProductPage()">
-          Create Product
-        </button>
+<main class="min-h-screen bg-gray-50 p-4">
+  @if (isAuthenticated) {
+  <div class="container mx-auto">
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Available Products ({{ products.length }})
+      </h1>
+      <button
+        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors duration-200"
+        (click)="goToCreateProductPage()"
+      >
+        Add New Product
+      </button>
+    </div>
+
+    @if (orderSuccess) {
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+      <strong class="font-bold">Success!</strong>
+      <span class="block sm:inline ml-2">Your order has been placed successfully.</span>
+    </div>
+    } @else if (orderFailed) {
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+      <strong class="font-bold">Order Failed!</strong>
+      <span class="block sm:inline ml-2">Please try again later.</span>
+      @if(quantityIsNull) {
+      <span class="block sm:inline ml-2 font-semibold">Quantity cannot be empty or zero.</span>
       }
     </div>
+    }
+
     @if (products.length > 0) {
-      @if (orderSuccess) {
-        <h4 class="text-green-500 font-bold">Order Placed Successfully</h4>
-      } @else if (orderFailed) {
-        <h4 class="text-red-500 font-bold">Order Failed, please try again later</h4>
-        @if(quantityIsNull) {
-          <h4 class="text-red-500 font-bold">Quantity cannot be null</h4>
-        }
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (product of products; track product.id) {
+      <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between hover:shadow-xl transition-shadow duration-200">
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">{{ product.name }}</h2>
+          <p class="text-gray-700 text-sm mb-4 line-clamp-3">{{ product.description }}</p> <div class="flex justify-between items-center mb-4">
+          <span class="text-2xl font-bold text-blue-600">${{ product.price | number:'1.2-2' }}</span>
+          <span class="text-sm text-gray-500">SKU: {{ product.skuCode }}</span>
+        </div>
+        </div>
+        <div class="mt-auto flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 sm:space-x-4">
+          <div class="flex items-center space-x-2 w-full sm:w-auto">
+            <label for="quantity-{{product.id}}" class="text-gray-700 font-medium">Qty:</label>
+            <input
+              type="number"
+              id="quantity-{{product.id}}"
+              #quantityInput
+              min="1"
+              value="1"
+              class="w-20 border border-gray-300 rounded-md py-2 px-3 text-gray-800 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <button
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 w-full sm:w-auto flex-grow"
+            (click)="orderProduct(product, quantityInput.value)"
+          >
+            Order Now
+          </button>
+        </div>
+        <div class="flex justify-end space-x-2 mt-4">
+          <button
+            class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold py-1 px-3 rounded-lg shadow transition-colors duration-200"
+            (click)="editProduct(product.id)"
+          >
+            Edit
+          </button>
+          <button
+            class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-1 px-3 rounded-lg shadow transition-colors duration-200"
+            (click)="deleteProduct(product.id)"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
       }
-      <ul class="list-disc list-inside">
-        @for (product of products; track product.id) {
-          <li class="mb-2 p-4 bg-gray-100 rounded-lg shadow-sm flex justify-between items-center">
-            <div>
-              <span class="font-semibold">{{ product.name }}</span> -
-              <span class="text-gray-600">
-                Price: {{ product.price }}
-              </span>
-              <br/>
-              <span >
-                Quantity: <input type="number" #quantityInput/>
-              </span>
-              <br/>
-            </div>
-            <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 ml-4"
-                    (click)="orderProduct(product, quantityInput.value)">
-              Order Now
-            </button>
-          </li>
-        }
-      </ul>
-    } @else if (products.length === 100) {
-      <span class="text-sm text-gray-700">
-      Click <a class="text-blue-500 hover:underline cursor-pointer">Load More</a> to see more products
-    </span>
+    </div>
     } @else {
-      <p class="text-red-500 font-semibold">No products found!</p>
+    <p class="text-center text-gray-600 text-lg py-10">No products found at the moment.</p>
     }
   </div>
+  } @else {
+  <div class="flex flex-col items-center justify-center text-center py-20 px-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg shadow-xl max-w-4xl mx-auto">
+    <svg class="w-24 h-24 text-blue-600 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1.594l-2.703 2.703A2.5 2.5 0 0110 21H8a2 2 0 01-2-2v-4.594l-2.703-2.703A2.5 2.5 0 013 10V8a2 2 0 012-2h3a1 1 0 001-1V4z"></path>
+    </svg>
+    <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+      Welcome to the <span class="text-blue-600">Microservices Shop</span>
+    </h1>
+    <p class="text-lg text-gray-700 max-w-2xl mb-8">
+      Discover a wide range of products tailored just for you. Log in to explore our full catalog, manage your orders, and add new items!
+    </p>
+    <button
+      class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105 duration-300"
+      (click)="oidcSecurityService.authorize()"
+    >
+      Login to Get Started
+    </button>
+  </div>
+  }
 </main>
