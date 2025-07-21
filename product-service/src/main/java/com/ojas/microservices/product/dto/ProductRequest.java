@@ -10,5 +10,7 @@ public record ProductRequest(
         @NotBlank(message = "Name is required") String name,
         String description,
         @NotNull(message = "Price is required")
-        @DecimalMin(value = "0.0", inclusive = false, message = "Price must be > 0") BigDecimal price
+        @DecimalMin(value = "0.0", inclusive = false, message = "Price must be > 0") BigDecimal price,
+        String skuCode,
+        int quantity
 ) {}
