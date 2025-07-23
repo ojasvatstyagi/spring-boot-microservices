@@ -1,6 +1,7 @@
 package com.ojas.microservices.order.service;
 
 import com.ojas.microservices.order.client.InventoryClient;
+import com.ojas.microservices.order.dto.InventoryRequest;
 import com.ojas.microservices.order.dto.InventoryResponse;
 import com.ojas.microservices.order.dto.OrderRequest;
 import com.ojas.microservices.order.dto.OrderResponse;
@@ -25,7 +26,14 @@ public class OrderService {
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
         InventoryResponse response = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
-        if (!response.inStock())  throw new ProductNotInStockException("Product is not in stock");
+
+        if (!response.inStock()) throw new ProductNotInStockException("Product is not in stock");
+
+        boolean reserved = inventoryClient.reserveStock(new InventoryRequest(
+                orderRequest.skuCode(), orderRequest.quantity()));
+
+        if (!reserved) throw new ProductNotInStockException("Unable to reserve stock");
+
         Order order = mapToOrder(orderRequest);
         orderRepository.save(order);
         return OrderResponse.fromOrder(order);

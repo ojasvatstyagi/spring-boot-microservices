@@ -1,5 +1,7 @@
 package com.ojas.microservices.order.controller;
 
+import com.ojas.microservices.order.client.InventoryClient;
+import com.ojas.microservices.order.dto.InventoryRequest;
 import com.ojas.microservices.order.dto.OrderRequest;
 import com.ojas.microservices.order.dto.OrderResponse;
 import com.ojas.microservices.order.exception.OrderNotFoundException;
@@ -19,6 +21,7 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final InventoryClient inventoryClient;
 
     @PostMapping
     public ResponseEntity<OrderResponse> placeOrder(@RequestBody @Valid OrderRequest orderRequest) {
@@ -43,5 +46,11 @@ public class OrderController {
         } catch (OrderNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/reserve")
+    public ResponseEntity<Boolean> reserveStock(@RequestBody InventoryRequest request) {
+        boolean success = inventoryClient.reserveStock(request);
+        return ResponseEntity.ok(success);
     }
 }
