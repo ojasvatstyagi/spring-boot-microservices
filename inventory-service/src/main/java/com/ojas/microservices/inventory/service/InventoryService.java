@@ -1,5 +1,6 @@
 package com.ojas.microservices.inventory.service;
 
+import com.ojas.microservices.inventory.dto.InventoryRequest;
 import com.ojas.microservices.inventory.dto.InventoryResponse;
 import com.ojas.microservices.inventory.model.Inventory;
 import com.ojas.microservices.inventory.repository.InventoryRepository;
@@ -19,7 +20,6 @@ public class InventoryService {
         return new InventoryResponse(skuCode, available);
     }
 
-    @Transactional
     public boolean reserveStock(String skuCode, int quantity) {
         Inventory inventory = inventoryRepository.findBySkuCode(skuCode)
                 .orElseThrow(() -> new RuntimeException("SKU not found"));
@@ -30,5 +30,21 @@ public class InventoryService {
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public void createInventory(InventoryRequest request) {
+        Inventory inventory = new Inventory();
+        inventory.setSkuCode(request.skuCode());
+        inventory.setQuantity(request.quantity());
+        inventoryRepository.save(inventory);
+    }
+
+    @Transactional
+    public void updateInventory(String skuCode, int quantity) {
+        Inventory inventory = inventoryRepository.findBySkuCode(skuCode)
+                .orElseThrow(() -> new RuntimeException("SKU not found: " + skuCode));
+        inventory.setQuantity(quantity);
+        inventoryRepository.save(inventory);
     }
 }
