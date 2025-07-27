@@ -5,11 +5,13 @@ import com.ojas.microservices.order.dto.InventoryRequest;
 import com.ojas.microservices.order.dto.InventoryResponse;
 import com.ojas.microservices.order.dto.OrderRequest;
 import com.ojas.microservices.order.dto.OrderResponse;
+import com.ojas.microservices.order.event.OrderPlacedEvent;
 import com.ojas.microservices.order.exception.OrderNotFoundException;
 import com.ojas.microservices.order.exception.ProductNotInStockException;
 import com.ojas.microservices.order.model.Order;
 import com.ojas.microservices.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final InventoryClient inventoryClient;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
         InventoryResponse response = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
@@ -36,6 +39,12 @@ public class OrderService {
 
         Order order = mapToOrder(orderRequest);
         orderRepository.save(order);
+
+        var orderPlacedEvent = new OrderPlacedEvent(order.getOrderNumber(),
+                orderRequest.userDetails().email(),
+                orderRequest.userDetails().firstName(),
+                orderRequest.userDetails().lastName());
+        kafkaTemplate.send("order-placed", orderPlacedEvent);
         return OrderResponse.fromOrder(order);
     }
 

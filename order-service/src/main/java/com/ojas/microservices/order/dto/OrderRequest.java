@@ -10,5 +10,8 @@ import java.math.BigDecimal;
 public record OrderRequest(
         @NotBlank String skuCode,
         @NotNull @DecimalMin("0.1") BigDecimal price,
-        @NotNull @Min(1) Integer quantity
-) {}
+        @NotNull @Min(1) Integer quantity,
+        @NotNull userDetails userDetails
+) {
+    public record userDetails(String firstName, String lastName, String email) {}
+}
