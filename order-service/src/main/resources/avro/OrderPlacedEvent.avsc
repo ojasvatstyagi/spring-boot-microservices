@@ -1,11 +1,9 @@
 {
+  "namespace": "com.ojas.avro",
   "type": "record",
   "name": "OrderPlacedEvent",
-  "namespace": "com.ojas.microservices.order.event",
   "fields": [
     { "name": "orderNumber", "type": "string" },
-    { "name": "email", "type": "string" },
-    { "name": "firstName", "type": "string" },
-    { "name": "lastName", "type": "string" }
-  ]
+    { "name": "email", "type": "string" }
+]
 }
