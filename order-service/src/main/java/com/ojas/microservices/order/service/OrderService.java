@@ -1,5 +1,6 @@
 package com.ojas.microservices.order.service;
 
+import com.ojas.avro.OrderPlacedEvent;
 import com.ojas.microservices.order.client.InventoryClient;
 import com.ojas.microservices.order.dto.InventoryRequest;
 import com.ojas.microservices.order.dto.InventoryResponse;
@@ -40,11 +41,12 @@ public class OrderService {
         Order order = mapToOrder(orderRequest);
         orderRepository.save(order);
 
-        var orderPlacedEvent = new OrderPlacedEvent(order.getOrderNumber(),
-                orderRequest.userDetails().email(),
-                orderRequest.userDetails().firstName(),
-                orderRequest.userDetails().lastName());
-        kafkaTemplate.send("order-placed", orderPlacedEvent);
+        OrderPlacedEvent event = OrderPlacedEvent.newBuilder()
+                .setOrderNumber(order.getOrderNumber())
+                .setEmail(orderRequest.userDetails().email())
+                .build();
+
+        kafkaTemplate.send("order-placed",event);
         return OrderResponse.fromOrder(order);
     }
 

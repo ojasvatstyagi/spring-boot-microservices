@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
+import com.ojas.avro.OrderPlacedEvent;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class NotificationService {
     private final JavaMailSender javaMailSender;
 
     @KafkaListener(topics = "order-placed")
-    public void listen(com.ojas.microservices.order.event.OrderPlacedEvent orderPlacedEvent){
+    public void listen(OrderPlacedEvent orderPlacedEvent){
         log.info("Got Message from order-placed topic {}", orderPlacedEvent);
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
@@ -32,8 +33,6 @@ public class NotificationService {
                             Best Regards
                             Spring Shop
                             """,
-                    orderPlacedEvent.getFirstName().toString(),
-                    orderPlacedEvent.getLastName().toString(),
                     orderPlacedEvent.getOrderNumber()));
         };
         try {
