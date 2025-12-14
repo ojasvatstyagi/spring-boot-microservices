@@ -44,7 +44,7 @@ It demonstrates a robust architecture featuring **synchronous and asynchronous c
 ---
 
 ## 🧩 Microservices Structure
-
+```
 ├── api-gateway
 ├── auth-server
 ├── eureka-server
@@ -56,7 +56,7 @@ It demonstrates a robust architecture featuring **synchronous and asynchronous c
 │ └── MySQL
 ├── notification-service
 └── kafka
-
+```
 ---
 
 ## 🔁 Communication Flow
